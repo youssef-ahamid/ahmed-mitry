@@ -78,5 +78,5 @@ export const contact = {
 
 export const profile = {
   phone: '+201005584543',
-  email: 'am8594@nyu.edu',
+  email: 'inquiries@ahmedmitry.com',
 }
