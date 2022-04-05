@@ -79,4 +79,7 @@ export const contact = {
 export const profile = {
   phone: '+201005584543',
   email: 'inquiries@ahmedmitry.com',
+  siteOwner: 'Ahmed Mitry',
+  siteName: 'ahmedmitry.com',
+  siteEmail: 'inquiries@ahmedmitry.com',
 }

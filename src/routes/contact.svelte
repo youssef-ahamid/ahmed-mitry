@@ -3,18 +3,40 @@
 
   import Button from '$lib/components/Button/index.svelte'
   import Form from '$lib/components/Form/index.svelte'
-  import { sendMessage } from '$lib/gql'
-
+  
+  
   import { contact, profile } from '$lib/presets'
   import { number, user, scroll } from '$lib/stores'
   import { fade } from 'svelte/transition'
   $scroll = false
+  
+  import zaagel from 'zaagel'
+  zaagel.configure(profile);
 
-  function send(message) {
-    $user = message.detail
-    sendMessage($user)
+  function send(e) {
+    $user = e.detail
     $number = 5
     goto('/thankyou/')
+
+    let message = {
+      to: profile.siteEmail,
+      subject: `New Message Received from ${e.detail.name}`,
+      template: 'message-received',
+      body: e.detail,
+      replyTo: e.detail.email,
+    }
+
+    zaagel.mail(message)
+
+    let confirmation = {
+      to: e.detail.email,
+      subject: `Message sent to ${profile.siteOwner}`,
+      template: 'message-sent',
+      body: e.detail,
+      replyTo: profile.siteEmail,
+    }
+
+    zaagel.mail(confirmation)
   }
 </script>
 
