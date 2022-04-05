@@ -52,6 +52,6 @@
     />
   {/each}
   {#if !!button}
-    <Button {...button} className={classes.button} />
+    <Button {...button} className={classes.button} on:click={submit} />
   {/if}
 </form>
