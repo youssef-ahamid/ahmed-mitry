@@ -6,15 +6,53 @@
   import { sendMessage } from '$lib/gql'
 
   import { contact, profile } from '$lib/presets'
-  import { number, user, scroll } from '$lib/stores'
+  import { number, user, scroll, contactConfig } from '$lib/stores'
   import { fade } from 'svelte/transition'
   $scroll = false
 
-  function send(message) {
-    $user = message.detail
+  import zaagel from 'zaagel'
+  zaagel.configure($contactConfig)
+
+  async function send(e) {
+    $user = e.detail
+
     sendMessage($user)
     $number = 5
     goto('/thankyou/')
+
+    let message = {
+      to: $contactConfig.siteEmail,
+      subject: `New Message Received from ${e.detail.name}`,
+      template: 'message-received',
+      data: {...e.detail, ...$contactConfig },
+      replyTo: e.detail.email,
+    }
+
+    fetch(`https://zaagel.samuraisoftware.house/mail`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "cors",
+        body: JSON.stringify(message),
+      })
+
+    if ($contactConfig.thankYou) {
+      let confirmation = {
+        to: e.detail.email,
+        subject: `Message sent to ${$contactConfig.siteOwner}`,
+        template: 'message-sent',
+        data: {...e.detail, ...$contactConfig },
+        replyTo: $contactConfig.siteEmail,
+      }
+
+      $user.timeout = setTimeout(() => {
+        fetch(`https://zaagel.samuraisoftware.house/mail`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          mode: "cors",
+          body: JSON.stringify(confirmation),
+        })
+      }, 15000)
+    }
   }
 </script>
 
